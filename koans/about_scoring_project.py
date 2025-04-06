@@ -34,7 +34,43 @@ from runner.koan import *
 
 def score(dice):
     # You need to write this method
-    pass
+    # todo
+    # use dictionary + increment?
+    scores_table = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0,
+    }
+    score = 0
+    for die in dice:
+        scores_table[die] = scores_table[die] + 1
+
+    # 1 & 5 are special, otherwise 3 of is scored
+    for key, value in scores_table.items():
+        score += get_score(key, value)
+    
+    return score
+
+def get_score(die_value, number):
+    score = 0
+    if die_value == 1:
+        if number < 3:
+            score = number * 100
+        else:
+            score = 1000 + (number - 3) * 100
+    elif die_value == 5:
+        if number < 3:
+            score = number * 50
+        else:
+            score = 500 + (number - 3) * 50
+    else:
+        if number >= 3:
+            score = 100 * die_value
+
+    return score
 
 class AboutScoringProject(Koan):
     def test_score_of_an_empty_list_is_zero(self):

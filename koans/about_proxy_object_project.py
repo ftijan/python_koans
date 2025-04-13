@@ -21,20 +21,47 @@ from runner.koan import *
 class Proxy:
     def __init__(self, target_object):
         # WRITE CODE HERE
-        
+        # Reused the approach from:
+        # https://akshaydandekar.wordpress.com/2012/09/18/proxy-object-project-python-koans/
+        object.__setattr__(self, '_messages', [])
+        object.__setattr__(self, '_was_called', {})        
 
         #initialize '_obj' attribute last. Trust me on this!
-        #self._obj = target_object # better below:
         object.__setattr__(self, '_obj', target_object)
 
     # WRITE CODE HERE    
     def __setattr__(self, attr_name, value):
-        # todo
+        self._messages.append(attr_name)
+        if attr_name in self._was_called:
+            self._was_called[attr_name] += 1
+        else:
+            self._was_called[attr_name] = 1
+
         setattr(object.__getattribute__(self, '_obj'), attr_name, value)
 
     def __getattr__(self, attr_name):
-        # todo
-        return getattr(object.__getattribute__(self, '_obj'), attr_name)        
+        if attr_name == 'messages':
+            return self.messages()
+        else:
+            self._messages.append(attr_name)
+            if attr_name in self._was_called:
+                self._was_called[attr_name] += 1
+            else:
+                self._was_called[attr_name] = 1
+        
+        return getattr(object.__getattribute__(self, '_obj'), attr_name)
+
+    def messages(self):
+        return self._messages
+
+    def was_called(self, attribute):
+        return attribute in self._was_called
+
+    def number_of_times_called(self, attribute):
+        if attribute in self._was_called:
+            return self._was_called[attribute]
+        else:
+            return 0
 
 # The proxy object should pass the following Koan:
 #
